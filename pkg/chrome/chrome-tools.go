@@ -2,24 +2,34 @@ package chrome
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const ChromeBinEnvName string = "CHROME_BIN"
 const ScreensDestEnvName string = "SCREENS_DEST"
 
-func MakeScreenshot() (string, error) {
+// Makes screenshot and returns image as byte array
+func MakeScreenshot(websiteURL string) ([]byte, error) {
 	chromeExecPath, found := os.LookupEnv(ChromeBinEnvName)
 	if !found {
-		log.Printf("Chrome executable path is not found.")
+		return nil, fmt.Errorf("chrome executable path is not found")
 	}
 
-	screensDestination, found := os.LookupEnv(ScreensDestEnvName)
+	fileDestinationPath, found := os.LookupEnv(ScreensDestEnvName)
 	if !found {
-		log.Printf("Screens destination path is not found.")
+		return nil, fmt.Errorf("screenshot destination path variable is not found")
 	}
+
+	fileName := strings.Join([]string{
+		strconv.Itoa(int(time.Now().Unix())),
+		".png",
+	}, "")
 
 	cmd := exec.Command(chromeExecPath,
 		"--headless",
@@ -27,16 +37,26 @@ func MakeScreenshot() (string, error) {
 		"--disable-software-rasterizer",
 		"--disable-dev-shm-usage",
 		"--no-sandbox",
-		fmt.Sprintf("--screenshot=%s/new_screenshot1.png", screensDestination),
+		fmt.Sprintf("--screenshot=%s/%s", fileDestinationPath, fileName),
 		"--hide-scrollbars",
-		"https://www.stopgame.ru")
+		fmt.Sprintf("%s", websiteURL),
+		)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	err := cmd.Run()
 	if err != nil {
-		return "", fmt.Errorf("command finished with error: %v", err)
+		return nil, fmt.Errorf("command finished with error: %v", err)
 	}
-	return fmt.Sprintf("Command output is: %s", cmd.Stdout), nil
+	log.Printf("Command output is: %s", cmd.Stdout)
+
+	fileData, err := ioutil.ReadFile(fileDestinationPath+"/"+fileName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read screenshot file: %v", err)
+	}
+
+	log.Printf("read %d bytes of data", len(fileData))
+
+	return fileData, nil
 }

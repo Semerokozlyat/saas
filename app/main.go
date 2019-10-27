@@ -16,7 +16,7 @@ func main() {
 	s := NewService()
 
 	router.HandleFunc("/status", s.HandlerStatus).Methods(http.MethodGet)
-	router.HandleFunc("/make_screenshot", s.HandlerMakeScreenshot).Methods(http.MethodPost)
+	router.HandleFunc("/make_screenshot", s.HandlerMakeScreenshot).Methods(http.MethodGet)
 
 	go s.StartProcessing()
 

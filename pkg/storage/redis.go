@@ -20,6 +20,7 @@ func (storage *RedisStorage) Get(id string) (interface{}, error) {
 }
 
 func (storage *RedisStorage) Put(interface{}) error {
+	log.Print("Storage Put operation")
 	return nil
 }
 
