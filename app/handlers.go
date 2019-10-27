@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,14 +17,14 @@ func (s *Service) HandlerStatus(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) HandlerMakeScreenshot(rw http.ResponseWriter, r *http.Request) {
-	requestParams := mux.Vars(r)
-	rawURL, ok := requestParams["url"]
+
+	rawURL, ok := r.URL.Query()["url"]
 	if !ok {
 		_, _ = fmt.Fprint(rw, "Mandatory GET request parameter is absent: url\n")
 		rw.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	resultedURL, err := url.ParseRequestURI(rawURL)
+	resultedURL, err := url.ParseRequestURI(rawURL[0])
 	if err != nil {
 		_, _ = fmt.Fprint(rw, "URL provided is not valid\n")
 		rw.WriteHeader(http.StatusBadRequest)

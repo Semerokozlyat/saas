@@ -39,6 +39,8 @@ func MakeScreenshot(websiteURL string) ([]byte, error) {
 		"--no-sandbox",
 		fmt.Sprintf("--screenshot=%s/%s", fileDestinationPath, fileName),
 		"--hide-scrollbars",
+		"--run-all-compositor-stages-before-draw",
+//		"--virtual-time-budget=10000",
 		fmt.Sprintf("%s", websiteURL),
 		)
 
