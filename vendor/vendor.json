@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "SyX+RAXiMs9K4iDMX5T+GEIHA+A=",
+			"path": "github.com/gomodule/redigo/redis",
+			"revision": "4f569a4708584d192c9b2e49bb2d9936341f1e68",
+			"revisionTime": "2019-10-11T21:59:27Z"
+		},
+		{
 			"checksumSHA1": "xQYLWDeitZevuStz56HucjM8Wk4=",
 			"path": "github.com/gorilla/mux",
 			"revision": "f395758b854c4efa789b8c1e9b73479704c548cb",
