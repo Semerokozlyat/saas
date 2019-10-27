@@ -2,13 +2,14 @@ package storage
 
 import (
 	"github.com/gomodule/redigo/redis"
+	"log"
+	"os"
 	"time"
 )
 
 type RedisStorage struct {
 	network string
-	host    string
-	port    string
+	addr    string
 	db      string
 
 	pool *redis.Pool
@@ -31,14 +32,35 @@ func (storage *RedisStorage) Delete(id string) error {
 }
 
 func (storage *RedisStorage) Create() *RedisStorage {
-	resultedStorage := &RedisStorage{
-		host: "127.0.0.1",
-		port: "6379",
-		db:   "1",
+
+	log.Print("Creating Redis storage")
+
+	networkVal, found := os.LookupEnv("REDIS_NETWORK")
+	if !found {
+		networkVal = "tcp"
 	}
+
+	addrVal, found := os.LookupEnv("REDIS_ADDR")
+	if !found {
+		addrVal = "redis:6379"
+	}
+
+	dbVal, found := os.LookupEnv("REDIS_DB")
+	if !found {
+		dbVal = "2"
+	}
+
+	resultedStorage := &RedisStorage{
+		network: networkVal,
+		addr: addrVal,
+		db:   dbVal,
+	}
+
+	log.Printf("Redis storage connection: %s/%s db %s", networkVal, addrVal, dbVal)
+
 	storage.pool = &redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial(storage.network, storage.host)
+			return redis.Dial(storage.network, storage.addr)
 		},
 		DialContext: nil,
 		TestOnBorrow: func(conn redis.Conn, t time.Time) error {
@@ -51,5 +73,6 @@ func (storage *RedisStorage) Create() *RedisStorage {
 		Wait:            false,
 		MaxConnLifetime: 60 * time.Second,
 	}
+	log.Print("Redis storage created")
 	return resultedStorage
 }

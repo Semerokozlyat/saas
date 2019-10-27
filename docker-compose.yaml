@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  saas-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    working_dir: /opt/saas
+    environment:
+      - REDIS_NETWORK=tcp
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASS=""
+      - REDIS_DB=1
+    command: bash -c "/opt/saas/saas"
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis"
+    ports:
+      - "6379:6379"
+    restart: always
