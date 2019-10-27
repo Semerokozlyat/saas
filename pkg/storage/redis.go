@@ -31,7 +31,7 @@ func (storage *RedisStorage) Delete(id string) error {
 	return nil
 }
 
-func (storage *RedisStorage) Create() *RedisStorage {
+func CreateRedisStorage() *RedisStorage {
 
 	log.Print("Creating Redis storage")
 
@@ -58,9 +58,9 @@ func (storage *RedisStorage) Create() *RedisStorage {
 
 	log.Printf("Redis storage connection: %s/%s db %s", networkVal, addrVal, dbVal)
 
-	storage.pool = &redis.Pool{
+	resultedStorage.pool = &redis.Pool{
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial(storage.network, storage.addr)
+			return redis.Dial(resultedStorage.network, resultedStorage.addr)
 		},
 		DialContext: nil,
 		TestOnBorrow: func(conn redis.Conn, t time.Time) error {

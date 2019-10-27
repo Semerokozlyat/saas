@@ -2,7 +2,7 @@ package chrome
 
 import (
 	"fmt"
-	"git.acronis.com/ab/go-service/log"
+	"log"
 	"os"
 	"os/exec"
 )
@@ -12,7 +12,7 @@ const ChromeBinEnvName string = "CHROME_BIN"
 func MakeScreenshot() (string, error) {
 	chromeExecPath, found := os.LookupEnv(ChromeBinEnvName)
 	if !found {
-		log.Error("Chrome executable path is not found.")
+		log.Printf("Chrome executable path is not found.")
 	}
 
 	out, err := exec.Command(

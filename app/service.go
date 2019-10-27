@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"saas/pkg/chrome"
+	"saas/pkg/storage"
 	"sync"
 )
 
@@ -10,6 +11,8 @@ type Service struct {
 	message chan string
 	stop    chan bool
 	wg      *sync.WaitGroup
+
+	storage storage.Storage
 }
 
 func NewService() *Service {
@@ -21,6 +24,8 @@ func NewService() *Service {
 	service.message = make(chan string, 100)
 	service.stop = make(chan bool, 1)
 	service.wg = new(sync.WaitGroup)
+
+	service.storage = storage.CreateRedisStorage()
 
 	return service
 }
