@@ -8,7 +8,7 @@ RUN apk add --update git gcc musl-dev
 ADD . /go/src/${PACKAGE_NAME}
 WORKDIR /go/src/${PACKAGE_NAME}
 
-RUN CGO_ENABLED=1 GOOS=linux go build -a \
+RUN CGO_ENABLED=0 GOOS=linux go build -a \
 # -installsuffix cgo \
  -gcflags '-N -l' \
  -ldflags '-w -X main.Version=${BUILD_VERSION}' -o saas ./app/
@@ -30,6 +30,7 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community > /etc/apk/reposi
     harfbuzz@edge \
     nss@edge \
     freetype@edge \
+    musl-dev@edge \
     ttf-freefont@edge \
     && rm -rf /var/cache/* \
     && mkdir /var/cache/apk

@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 const ChromeBinEnvName string = "CHROME_BIN"
@@ -22,23 +21,22 @@ func MakeScreenshot() (string, error) {
 		log.Printf("Screens destination path is not found.")
 	}
 
-	resultedCommand := strings.Join([]string{chromeExecPath,
+	cmd := exec.Command(chromeExecPath,
 		"--headless",
 		"--disable-gpu",
 		"--disable-software-rasterizer",
 		"--disable-dev-shm-usage",
 		"--no-sandbox",
 		fmt.Sprintf("--screenshot=%s/new_screenshot1.png", screensDestination),
-		"--disable-gpu",
 		"--hide-scrollbars",
-		"https://www.drom.ru"}, " ")
+		"https://www.stopgame.ru")
 
-	log.Printf("Going to exec command: %s", resultedCommand)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
-	out, err := exec.Command(resultedCommand).Output()
-	//out, err := exec.Command("hostname").Output()
+	err := cmd.Run()
 	if err != nil {
 		return "", fmt.Errorf("command finished with error: %v", err)
 	}
-	return fmt.Sprintf("Command output is: %s", out), nil
+	return fmt.Sprintf("Command output is: %s", cmd.Stdout), nil
 }
