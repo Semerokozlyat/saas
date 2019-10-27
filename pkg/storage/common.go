@@ -6,4 +6,3 @@ type Storage interface {
 	Update(id string) error
 	Delete(id string) error
 }
-

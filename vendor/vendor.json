@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "xQYLWDeitZevuStz56HucjM8Wk4=",
+			"path": "github.com/gorilla/mux",
+			"revision": "f395758b854c4efa789b8c1e9b73479704c548cb",
+			"revisionTime": "2019-10-24T12:12:56Z"
+		}
+	],
+	"rootPath": "saas"
+}

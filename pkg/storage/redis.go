@@ -7,9 +7,9 @@ import (
 
 type RedisStorage struct {
 	network string
-	host string
-	port string
-	db   string
+	host    string
+	port    string
+	db      string
 
 	pool *redis.Pool
 }
@@ -30,7 +30,6 @@ func (storage *RedisStorage) Delete(id string) error {
 	return nil
 }
 
-
 func (storage *RedisStorage) Create() *RedisStorage {
 	resultedStorage := &RedisStorage{
 		host: "127.0.0.1",
@@ -38,11 +37,11 @@ func (storage *RedisStorage) Create() *RedisStorage {
 		db:   "1",
 	}
 	storage.pool = &redis.Pool{
-		Dial:            func() (redis.Conn, error) {
+		Dial: func() (redis.Conn, error) {
 			return redis.Dial(storage.network, storage.host)
 		},
-		DialContext:     nil,
-		TestOnBorrow:    func(conn redis.Conn, t time.Time) error {
+		DialContext: nil,
+		TestOnBorrow: func(conn redis.Conn, t time.Time) error {
 			_, err := conn.Do("PING")
 			return err
 		},

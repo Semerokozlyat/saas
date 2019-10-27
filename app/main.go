@@ -1,12 +1,14 @@
 package main
 
 import (
-	"log"
-	_ "saas/pkg/chrome"
-	"net/http"
 	"github.com/gorilla/mux"
-	_"time"
+	"log"
+	"net/http"
+	_ "saas/pkg/chrome"
+	_ "time"
 )
+
+var Version string
 
 func main() {
 
