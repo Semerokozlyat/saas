@@ -47,7 +47,7 @@ ENV CHROME_PATH=/usr/lib/chromium/
 
 WORKDIR /opt/saas/${PACKAGE_NAME}
 COPY --from=build_location /go/src/${PACKAGE_NAME}/saas /opt/saas/
-EXPOSE 8000
+#EXPOSE 8000
 
 # Autorun chrome headless with no GPU
 #ENTRYPOINT ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage"]

@@ -14,7 +14,10 @@ services:
       - REDIS_ADDR=redis:6379
       - REDIS_PASS=""
       - REDIS_DB=1
+      - SCREENS_DEST=/screens
     #command: bash -c "/opt/saas/saas"
+    volumes:
+      - /home/eugene/Pictures/screens:/screens
     depends_on:
       - redis
 
