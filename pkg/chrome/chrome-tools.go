@@ -34,13 +34,11 @@ func MakeScreenshot(websiteURL string) ([]byte, error) {
 	cmd := exec.Command(chromeExecPath,
 		"--headless",
 		"--disable-gpu",
-		"--disable-software-rasterizer",
 		"--disable-dev-shm-usage",
 		"--no-sandbox",
-		fmt.Sprintf("--screenshot=%s/%s", fileDestinationPath, fileName),
 		"--hide-scrollbars",
 		"--run-all-compositor-stages-before-draw",
-//		"--virtual-time-budget=10000",
+		fmt.Sprintf("--screenshot=%s/%s", fileDestinationPath, fileName),
 		fmt.Sprintf("%s", websiteURL),
 		)
 
