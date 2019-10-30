@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
+	"time"
 )
 
 func (s *Service) HandlerStatus(rw http.ResponseWriter, r *http.Request) {
@@ -24,7 +26,7 @@ func (s *Service) HandlerRequestScreenshot(rw http.ResponseWriter, r *http.Reque
 		_, _ = fmt.Fprintf(rw, "Mandatory GET request parameter is absent: file_name\n")
 		rw.WriteHeader(http.StatusBadRequest)
 	}
-	message := Message{screenFileName: fileName[0]}
+	message := Message{ScreenFileName: fileName[0]}
 	s.get <- message
 
 	bytesData = DataCache[fileName[0]]
@@ -57,8 +59,13 @@ func (s *Service) HandlerMakeScreenshot(rw http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	message := Message{websiteURL: resultedURL.String()}
+	message := Message{
+		ScreenFileName: strconv.Itoa(int(time.Now().Unix())) + ".png",
+		WebsiteURL: resultedURL.String(),
+	}
 	s.put <- message
+
+	_, _ = fmt.Fprintf(rw, "Request accepted. Screenshot filename will be: %s", message.ScreenFileName)
 
 	rw.WriteHeader(http.StatusAccepted)
 }

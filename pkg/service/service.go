@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"log"
@@ -22,8 +22,8 @@ type Service struct {
 }
 
 type Message struct {
-	screenFileName string
-	websiteURL     string
+	ScreenFileName string
+	WebsiteURL     string
 }
 
 func NewService() *Service {
@@ -66,11 +66,11 @@ func (s *Service) StartProcessing() {
 			}
 			log.Printf("Received request for file: %v", mess)
 			s.wg.Add(1)
-			fileByteData, errGet := s.storage.Get(mess.screenFileName)
+			fileByteData, errGet := s.storage.Get(mess.ScreenFileName)
 			if errGet != nil {
 				log.Printf("failed to get file data: %v", errGet)
 			}
-			DataCache[mess.screenFileName] = fileByteData
+			DataCache[mess.ScreenFileName] = fileByteData
 			s.wg.Done()
 			s.wg.Wait()
 		case mess, ok := <-s.put:
@@ -79,11 +79,11 @@ func (s *Service) StartProcessing() {
 			}
 			log.Printf("Received message to process: %v", mess)
 			s.wg.Add(1)
-			fileName, fileByteData, err := chrome.MakeScreenshot(mess.websiteURL)
+			fileByteData, err := chrome.MakeScreenshot(mess)
 			if err != nil {
 				log.Printf("failed to make screenshot: %v", err)
 			}
-			errPut := s.storage.Put(fileName, fileByteData)
+			errPut := s.storage.Put(mess.ScreenFileName, fileByteData)
 			if errPut != nil {
 				log.Printf("failed to save file data: %v", errPut)
 			}

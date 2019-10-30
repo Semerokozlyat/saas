@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"saas/pkg/service"
 	_ "saas/pkg/chrome"
 	_ "time"
 )
@@ -13,7 +14,7 @@ var Version string
 func main() {
 
 	router := mux.NewRouter()
-	s := NewService()
+	s := service.NewService()
 
 	router.HandleFunc("/status", s.HandlerStatus).Methods(http.MethodGet)
 	router.HandleFunc("/make_screenshot", s.HandlerMakeScreenshot).Methods(http.MethodGet)
