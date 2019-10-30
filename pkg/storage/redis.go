@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"log"
 	"os"
@@ -15,12 +16,43 @@ type RedisStorage struct {
 	pool *redis.Pool
 }
 
-func (storage *RedisStorage) Get(id string) (interface{}, error) {
-	return nil, nil
+func (storage *RedisStorage) Get(id string) ([]byte, error) {
+	conn := storage.pool.Get()
+	defer conn.Close()
+
+	selectRes, err := redis.String(conn.Do("SELECT", storage.db))
+	if selectRes != "OK" {
+		return nil, fmt.Errorf("failed to select Redis DB on GET: %v", err)
+	}
+
+	data, err := redis.Bytes(conn.Do("GET", id))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get data from db")
+	}
+
+	return data, nil
 }
 
-func (storage *RedisStorage) Put(interface{}) error {
-	log.Print("Storage Put operation")
+func (storage *RedisStorage) Put(id string, data []byte) error {
+	conn := storage.pool.Get()
+	defer conn.Close()
+
+	selectRes, err := redis.String(conn.Do("SELECT", storage.db))
+	if selectRes != "OK" {
+		return fmt.Errorf("failed to select Redis DB on SET: %v", err)
+	}
+
+	exists, err := redis.Int(conn.Do("EXISTS", id))
+	if err != nil {
+		return fmt.Errorf("failed to check if DB key already exists")
+	} else if exists == 1 {
+		return fmt.Errorf("DB key already exists")
+	}
+	result, err := redis.String(conn.Do("SET", id, data))
+	if err != nil || result != "OK" {
+		return fmt.Errorf("failed to put data into DB")
+	}
+
 	return nil
 }
 
@@ -28,8 +60,19 @@ func (storage *RedisStorage) Update(id string) error {
 	return nil
 }
 
-func (storage *RedisStorage) Delete(id string) error {
-	return nil
+func (storage *RedisStorage) Delete(id string) (int, error) {
+	conn := storage.pool.Get()
+	defer conn.Close()
+
+	selectRes, err := redis.String(conn.Do("SELECT", storage.db))
+	if selectRes != "OK" {
+		return 0, fmt.Errorf("failed to select Redis DB on DELETE: %v", err)
+	}
+	delCount, err := redis.Int(conn.Do("DEL", id))
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete data from DB: %v", err)
+	}
+	return delCount, nil
 }
 
 func CreateRedisStorage() *RedisStorage {

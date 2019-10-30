@@ -5,10 +5,16 @@ import (
 	"saas/pkg/chrome"
 	"saas/pkg/storage"
 	"sync"
+	"time"
+)
+
+var (
+	DataCache = make(map[string][]byte)
 )
 
 type Service struct {
-	message chan Message
+	get     chan Message
+	put     chan Message
 	stop    chan bool
 	wg      *sync.WaitGroup
 
@@ -16,16 +22,18 @@ type Service struct {
 }
 
 type Message struct {
-	websiteURL string
+	screenFileName string
+	websiteURL     string
 }
 
 func NewService() *Service {
 	service := &Service{
-		message: nil,
+		put: nil,
 		stop:    nil,
 		wg:      nil,
 	}
-	service.message = make(chan Message, 100)
+	service.get = make(chan Message, 100)
+	service.put = make(chan Message, 100)
 	service.stop = make(chan bool, 1)
 	service.wg = new(sync.WaitGroup)
 
@@ -40,25 +48,42 @@ func (s *Service) StartProcessing() {
 	//s.wg.Add(1)
 	//s.wg.Wait()
 
-	defer close(s.message)
+	defer close(s.put)
 	defer close(s.stop)
+
+	ticker := time.NewTicker(300 * time.Second)
 
 	for {
 		select {
 		case <-s.stop:
 			log.Println("Stop processing!")
 			return
-		case mess, ok := <-s.message:
+		case <- ticker.C:
+			DataCache = make(map[string][]byte)
+		case mess, ok := <-s.get:
 			if !ok {
 				return
 			}
-			log.Printf("Get message to process: %v", mess)
+			log.Printf("Received request for file: %v", mess)
 			s.wg.Add(1)
-			fileByteData, err := chrome.MakeScreenshot(mess.websiteURL)
+			fileByteData, errGet := s.storage.Get(mess.screenFileName)
+			if errGet != nil {
+				log.Printf("failed to get file data: %v", errGet)
+			}
+			DataCache[mess.screenFileName] = fileByteData
+			s.wg.Done()
+			s.wg.Wait()
+		case mess, ok := <-s.put:
+			if !ok {
+				return
+			}
+			log.Printf("Received message to process: %v", mess)
+			s.wg.Add(1)
+			fileName, fileByteData, err := chrome.MakeScreenshot(mess.websiteURL)
 			if err != nil {
 				log.Printf("failed to make screenshot: %v", err)
 			}
-			errPut := s.storage.Put(fileByteData)
+			errPut := s.storage.Put(fileName, fileByteData)
 			if errPut != nil {
 				log.Printf("failed to save file data: %v", errPut)
 			}

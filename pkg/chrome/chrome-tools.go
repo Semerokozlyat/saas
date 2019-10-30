@@ -14,16 +14,17 @@ import (
 const ChromeBinEnvName string = "CHROME_BIN"
 const ScreensDestEnvName string = "SCREENS_DEST"
 
-// Makes screenshot and returns image as byte array
-func MakeScreenshot(websiteURL string) ([]byte, error) {
+
+// Makes screenshot and returns file name, image as byte array
+func MakeScreenshot(websiteURL string) (string, []byte, error) {
 	chromeExecPath, found := os.LookupEnv(ChromeBinEnvName)
 	if !found {
-		return nil, fmt.Errorf("chrome executable path is not found")
+		return "", nil, fmt.Errorf("chrome executable path is not found")
 	}
 
 	fileDestinationPath, found := os.LookupEnv(ScreensDestEnvName)
 	if !found {
-		return nil, fmt.Errorf("screenshot destination path variable is not found")
+		return "", nil, fmt.Errorf("screenshot destination path variable is not found")
 	}
 
 	fileName := strings.Join([]string{
@@ -47,16 +48,16 @@ func MakeScreenshot(websiteURL string) ([]byte, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("command finished with error: %v", err)
+		return "", nil, fmt.Errorf("command finished with error: %v", err)
 	}
 	log.Printf("Command output is: %s", cmd.Stdout)
 
 	fileData, err := ioutil.ReadFile(fileDestinationPath+"/"+fileName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read screenshot file: %v", err)
+		return "", nil, fmt.Errorf("failed to read screenshot file: %v", err)
 	}
 
 	log.Printf("read %d bytes of data", len(fileData))
 
-	return fileData, nil
+	return fileName, fileData, nil
 }
