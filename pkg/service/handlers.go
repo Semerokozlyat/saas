@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -35,14 +36,15 @@ func (s *Service) HandlerRequestScreenshot(rw http.ResponseWriter, r *http.Reque
 		log.Println("Did not find data in cache, requesting from storage")
 		bytesData, _ = s.storage.Get(fileName[0])
 	}
-	f, err := os.Create(fmt.Sprintf("/screens/%s.png", fileName))
+	f, err := os.Create(fmt.Sprintf("/screens/%s", fileName[0]))
 	if err != nil {
 		_, _ = fmt.Fprintf(rw, "Failed to create file on demand: %v", err)
 	}
 	bytesWritten, err := f.Write(bytesData)
-	rw.Write([]byte(fmt.Sprintf("file saved successfully, its name is %s, size is %d", fileName, bytesWritten)))
+	_, _ = rw.Write([]byte(fmt.Sprintf("file saved successfully, its name is %s, size is %d", fileName, bytesWritten)))
 	rw.WriteHeader(http.StatusOK)
 }
+
 
 func (s *Service) HandlerMakeScreenshot(rw http.ResponseWriter, r *http.Request) {
 
@@ -52,20 +54,26 @@ func (s *Service) HandlerMakeScreenshot(rw http.ResponseWriter, r *http.Request)
 		rw.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	resultedURL, err := url.ParseRequestURI(rawURL[0])
-	if err != nil {
-		_, _ = fmt.Fprint(rw, "URL provided is not valid\n")
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	listOfURL := strings.Split(rawURL[0], ",")
+	for idx, u := range listOfURL {
+		resultedURL, err := url.ParseRequestURI(u)
+		if err != nil {
+			_, _ = fmt.Fprint(rw, "URL provided is not valid\n")
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		message := Message{
+			ScreenFileName: strings.Join([]string{
+				strconv.Itoa(int(time.Now().Unix())),
+				strconv.Itoa(idx),
+				"png",
+			}, "."),
+			WebsiteURL: resultedURL.String(),
+		}
+		s.put <- message
 
-	message := Message{
-		ScreenFileName: strconv.Itoa(int(time.Now().Unix())) + ".png",
-		WebsiteURL: resultedURL.String(),
+		_, _ = fmt.Fprintf(rw, "Request accepted. Screenshot filename will be: %s\n", message.ScreenFileName)
 	}
-	s.put <- message
-
-	_, _ = fmt.Fprintf(rw, "Request accepted. Screenshot filename will be: %s", message.ScreenFileName)
 
 	rw.WriteHeader(http.StatusAccepted)
 }

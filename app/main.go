@@ -16,6 +16,7 @@ func main() {
 
 	router.HandleFunc("/status", s.HandlerStatus).Methods(http.MethodGet)
 	router.HandleFunc("/make_screenshot", s.HandlerMakeScreenshot).Methods(http.MethodGet)
+	router.HandleFunc("/get_screenshot", s.HandlerRequestScreenshot).Methods(http.MethodGet)
 
 	go s.StartProcessing()
 
