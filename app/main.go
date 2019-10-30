@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"saas/pkg/service"
-	_ "saas/pkg/chrome"
-	_ "time"
 )
 
 var Version string

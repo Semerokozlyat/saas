@@ -79,7 +79,7 @@ func (s *Service) StartProcessing() {
 			}
 			log.Printf("Received message to process: %v", mess)
 			s.wg.Add(1)
-			fileByteData, err := chrome.MakeScreenshot(mess)
+			fileByteData, err := chrome.MakeScreenshot(mess.ScreenFileName, mess.WebsiteURL)
 			if err != nil {
 				log.Printf("failed to make screenshot: %v", err)
 			}
