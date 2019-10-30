@@ -41,7 +41,7 @@ func (s *Service) HandlerRequestScreenshot(rw http.ResponseWriter, r *http.Reque
 		_, _ = fmt.Fprintf(rw, "Failed to create file on demand: %v", err)
 	}
 	bytesWritten, err := f.Write(bytesData)
-	_, _ = rw.Write([]byte(fmt.Sprintf("file saved successfully, its name is %s, size is %d", fileName, bytesWritten)))
+	_, _ = rw.Write([]byte(fmt.Sprintf("file saved successfully, its name is %s, size is %d\n", fileName[0], bytesWritten)))
 	rw.WriteHeader(http.StatusOK)
 }
 
