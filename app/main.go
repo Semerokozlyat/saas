@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -9,7 +11,17 @@ import (
 
 var Version string
 
+const AppName string = "Screenshot-as-a-Service"
+
 func main() {
+
+	var versionFlag = flag.Bool("--version", false, "show application version")
+
+	flag.Parse()
+	if *versionFlag {
+		fmt.Println("Application name: ", AppName)
+		fmt.Println("Application version: ", Version)
+	}
 
 	router := mux.NewRouter()
 	s := service.NewService()

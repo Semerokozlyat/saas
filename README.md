@@ -89,7 +89,7 @@ Even though `--disable-gpu` parameter is used in headless chrome commandline, on
  and returns white pictures instead of website screenshots.
  
 ## Possible improvements
-
+ - Get rid of hardcoded "/screens" directory across the code
  - Add more intelligent request parsing, change methods to POST - to provide request parameters in body
  - Move to k8s for better scalability (current storage scheme supports HA by means of several k8s pods, storage logic is 
  separated from functional logic, any kind of storage could be used due to common interface method)
