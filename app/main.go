@@ -28,5 +28,3 @@ func main() {
 	}
 
 }
-
-//docker container run -it --rm -v $(pwd):/usr/src/app zenika/alpine-chrome --no-sandbox --screenshot --disable-gpu --hide-scrollbars https://www.drom.ru

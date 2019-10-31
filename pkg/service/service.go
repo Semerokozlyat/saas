@@ -13,10 +13,10 @@ var (
 )
 
 type Service struct {
-	get     chan Message
-	put     chan Message
-	stop    chan bool
-	wg      *sync.WaitGroup
+	get  chan Message
+	put  chan Message
+	stop chan bool
+	wg   *sync.WaitGroup
 
 	storage storage.Storage
 }
@@ -28,9 +28,9 @@ type Message struct {
 
 func NewService() *Service {
 	service := &Service{
-		put: nil,
-		stop:    nil,
-		wg:      nil,
+		put:  nil,
+		stop: nil,
+		wg:   nil,
 	}
 	service.get = make(chan Message, 100)
 	service.put = make(chan Message, 100)
@@ -45,9 +45,6 @@ func NewService() *Service {
 func (s *Service) StartProcessing() {
 	log.Println("Service started")
 
-	//s.wg.Add(1)
-	//s.wg.Wait()
-
 	defer close(s.put)
 	defer close(s.stop)
 
@@ -58,7 +55,7 @@ func (s *Service) StartProcessing() {
 		case <-s.stop:
 			log.Println("Stop processing!")
 			return
-		case <- ticker.C:
+		case <-ticker.C:
 			DataCache = make(map[string][]byte)
 		case mess, ok := <-s.get:
 			if !ok {

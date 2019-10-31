@@ -11,7 +11,6 @@ import (
 const ChromeBinEnvName string = "CHROME_BIN"
 const ScreensDestEnvName string = "SCREENS_DEST"
 
-
 // Makes screenshot and returns file name, image as byte array
 func MakeScreenshot(fileName string, websiteURL string) ([]byte, error) {
 	chromeExecPath, found := os.LookupEnv(ChromeBinEnvName)
@@ -33,7 +32,7 @@ func MakeScreenshot(fileName string, websiteURL string) ([]byte, error) {
 		"--run-all-compositor-stages-before-draw",
 		fmt.Sprintf("--screenshot=%s/%s", fileDestinationPath, fileName),
 		fmt.Sprintf("%s", websiteURL),
-		)
+	)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -44,7 +43,7 @@ func MakeScreenshot(fileName string, websiteURL string) ([]byte, error) {
 	}
 	log.Printf("Command output is: %s", cmd.Stdout)
 
-	fileData, err := ioutil.ReadFile(fileDestinationPath+"/"+fileName)
+	fileData, err := ioutil.ReadFile(fileDestinationPath + "/" + fileName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read screenshot file: %v", err)
 	}

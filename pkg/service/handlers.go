@@ -43,12 +43,11 @@ func (s *Service) HandlerRequestScreenshot(rw http.ResponseWriter, r *http.Reque
 	bytesWritten, err := f.Write(bytesData)
 	_, _ = rw.Write([]byte(fmt.Sprintf(
 		"Screenshot is uploaded to share.\n You may download it by using this link: %s, its size is %d kB\n",
-		"http://localhost:8000/screens/" + fileName[0],
-		bytesWritten / 1024,
-		)))
+		"http://localhost:8000/screens/"+fileName[0],
+		bytesWritten/1024,
+	)))
 	rw.WriteHeader(http.StatusOK)
 }
-
 
 func (s *Service) HandlerMakeScreenshot(rw http.ResponseWriter, r *http.Request) {
 

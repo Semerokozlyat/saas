@@ -96,8 +96,8 @@ func CreateRedisStorage() *RedisStorage {
 
 	resultedStorage := &RedisStorage{
 		network: networkVal,
-		addr: addrVal,
-		db:   dbVal,
+		addr:    addrVal,
+		db:      dbVal,
 	}
 
 	log.Printf("Redis storage connection: %s/%s db %s", networkVal, addrVal, dbVal)

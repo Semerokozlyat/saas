@@ -1,6 +1,5 @@
 #Build
 FROM golang:1.12-alpine as build_location
-#FROM golang:latest as build_location
 ARG PACKAGE_NAME=saas
 ARG BUILD_VERSION=0.1
 
